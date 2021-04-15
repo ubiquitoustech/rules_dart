@@ -16,3 +16,7 @@ See the test folder readme for how to use these rules.
 
 Use stardoc to make the docs for the rules as needed:
 https://github.com/bazelbuild/stardoc
+
+need to install MSYS2 x86_64 in C:\tools\msys64 before running on windows
+
+you still need dart installed to create .dart_tool/package_config.json in tests/package_simple example
