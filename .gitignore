@@ -30,3 +30,19 @@ build/
 
 # Directory created by dartdoc
 doc/api/
+
+# js
+*.js
+*.js.*
+
+# exe
+*.exe
+
+# aot
+*.aot
+
+# dill
+*.dill
+
+# jit
+*.jit

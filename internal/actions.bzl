@@ -17,18 +17,35 @@ def dart_compile(ctx, srcs, out, package_config, lib, cmd):
     args.add("compile")
     args.add(cmd)
     # if someone does not declare a package_config don't add it into the command
-    if package_config != []:
+    if ((package_config != []) and  (cmd != "js") and (cmd != "kernel") and (cmd != "jit-snapshot")):
         args.add("-p")
         args.add_all(package_config)
     args.add_all(srcs)
     args.add("-o", out)
+
+    # turn on --minified for js compile
+    # might add another optional arg to turn minified on and off
+    if (cmd == "js"):
+        args.add("-m")
+        # this should declare multiple files
+        # .js .js.deps .js.map
+        # not really sure what the best way to handle multiple outputs is
+        # right now it will fail if they aren't generated but it just passes
+        # the main .js file as output
+        executable_path = "{name}_/{name}".format(name = ctx.label.name)
+        out2 = ctx.actions.declare_file(executable_path + ".js.deps")
+        out3 = ctx.actions.declare_file(executable_path + ".js.map")
+        out = [out, out2, out3]
+    else:
+        out = [out]
+
 
     inputs = (srcs
               + 
               toolchain.internal.tools +
               toolchain.internal.std_pkgs)
     ctx.actions.run(
-        outputs = [out],
+        outputs = out,
         inputs = inputs + package_config + lib,
         executable = toolchain.internal.builder,
         arguments = [args],

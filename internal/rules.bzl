@@ -8,6 +8,10 @@ load("@rules_dart//internal:providers.bzl", "DartLibraryInfo")
 load("@bazel_skylib//lib:shell.bzl", "shell")
 
 def _dart_binary_impl(ctx):
+    # this should probably be broken into multiple rules
+    # making the rules more correct for the actions 
+    # if the require a config file 
+    # if they are executable or not
 
     dart_toolchain = ctx.toolchains["@rules_dart//:toolchain_type"]
 
@@ -23,6 +27,14 @@ def _dart_binary_impl(ctx):
     ending = ""
     if ctx.attr.cmd == "exe":
         ending = ".exe"
+    if ctx.attr.cmd == "aot-snapshot":
+        ending = ".aot"
+    if ctx.attr.cmd == "js":
+        ending = ".js"
+    if ctx.attr.cmd == "kernel":
+        ending = ".dill"
+    if ctx.attr.cmd == "jit-snapshot":
+        ending = ".jit"
     executable = ctx.actions.declare_file(executable_path + ending)
 
     dart_toolchain.compile(
