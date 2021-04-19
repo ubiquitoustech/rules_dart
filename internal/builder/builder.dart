@@ -3,6 +3,7 @@ import 'dart:io';
 main(List<String> args) async {
 
   String cmd = args[0];
+  // need to get working directory for dart and the depth of the working directory
 
   // need to get the environment variable for dart find its path and use that here
   Map<String, String> envVars = Platform.environment;
@@ -11,7 +12,8 @@ main(List<String> args) async {
   String? dartroot = envVars['DARTROOT'];
   print("DARTROOT: ${dartroot}");
 
-  var dartexe = ""; 
+  var dartexe = "";
+  var path = {"":""}; 
 
   if (Platform.isLinux) {
     dartexe = "${dartroot}/bin/dart";
@@ -21,6 +23,15 @@ main(List<String> args) async {
 
   } else if (Platform.isWindows) {
     dartexe = "${dartroot}/bin/dart.exe";
+    path = {
+        // This needs to be updated automatically depending on what package you are trying to compile
+        "PATH":"../../${dartroot}/bin",
+        // this should point to a shared cache or use external dependencies like other bazel rules ex: rules_go
+        "PUB_CACHE": ".",
+        // this environment variable is from here: https://github.com/dart-lang/test/blob/5569fabbec6647f01f957b684e235125edbb67ec/pkgs/test_core/lib/src/executable.dart#L27
+        // "LOCALAPPDATA": ".",
+        "DART_TEST_CONFIG": ".",
+      };
 
   } else {
     print("Platform not supported for environment variables");
@@ -34,13 +45,29 @@ main(List<String> args) async {
 
   switch(cmd) { 
     case "compile": {
+      // var test = await Process.run(dartexe, ['test', 'test/package_simple_test.dart',], workingDirectory: "tests/package_simple"); // {workingDirectory = ""}
+      //var test = await Process.run(dartexe, ['pub', 'get',]); //, workingDirectory: "tests/package_simple");
+      // var get = await Process.run('dart', ['pub', 'get', '--precompile'], runInShell: true, workingDirectory: "tests/package_simple", environment: path);
+      // stdout.write(get.stdout);
+      // stderr.write(get.stderr);
+      var test = await Process.run('dart', ['test'], runInShell: true, workingDirectory: "tests/package_simple", environment: path);
+      stdout.write(test.stdout);
+      stderr.write(test.stderr);
+      // var see = await Process.run('dir', [], runInShell: true, workingDirectory: "tests/package_simple"); //, workingDirectory: "tests/package_simple");
+      // stdout.write(see.stdout);
+      // stderr.write(see.stderr);
+      // print(args);
       var result = await Process.run(dartexe , args);
       stdout.write(result.stdout);
       stderr.write(result.stderr);
     } 
     break; 
     
-    case "test": {  print("test"); } 
+    case "test": {
+      var test = await Process.run('dart', ['test'], runInShell: true, workingDirectory: "tests/package_simple", environment: path);
+      stdout.write(test.stdout);
+      stderr.write(test.stderr);
+    } 
     break;
 
     case "analyze": {  print("analyze"); } 
@@ -58,7 +85,11 @@ main(List<String> args) async {
     case "migrate": {  print("migrate"); } 
     break;
 
-    case "pub": {  print("pub"); } 
+    case "pub": {
+      var get = await Process.run('dart', ['pub', 'get', '--precompile'], runInShell: true, workingDirectory: "tests/package_simple", environment: path);
+      stdout.write(get.stdout);
+      stderr.write(get.stderr);
+    } 
     break;
     
     default: { print("Invalid choice"); } 

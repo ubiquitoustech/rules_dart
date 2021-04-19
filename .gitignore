@@ -46,3 +46,9 @@ doc/api/
 
 # jit
 *.jit
+
+# dart
+.dart
+
+# hosted
+hosted

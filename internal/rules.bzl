@@ -75,7 +75,7 @@ dart_binary = rule(
             doc = "Source files to compile for the main package of this binary",
         ),
         "lib": attr.label_list(
-            allow_files = [".dart"],
+            allow_files = [".dart", ".yaml"], #, ".snapshot"],
             doc = "Source files to compile for the lib package of this binary",
         ),
         "cmd": attr.string(

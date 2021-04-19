@@ -15,12 +15,17 @@ def dart_compile(ctx, srcs, out, package_config, lib, cmd):
     toolchain = ctx.toolchains["@rules_dart//:toolchain_type"]
     args = ctx.actions.args()
     args.add("compile")
+    # args.add("test")
     args.add(cmd)
     # if someone does not declare a package_config don't add it into the command
+    # some of the compile options don't have a package_config option
     if ((package_config != []) and  (cmd != "js") and (cmd != "kernel") and (cmd != "jit-snapshot")):
         args.add("-p")
         args.add_all(package_config)
     args.add_all(srcs)
+
+
+    # turned off for trial of testing
     args.add("-o", out)
 
     # turn on --minified for js compile

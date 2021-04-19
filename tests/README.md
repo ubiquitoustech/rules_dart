@@ -23,4 +23,4 @@ bazel build //tests/package_simple:example_kernel
 
 
 
-bazel run //tests/package_simple:example
+bazel run //tests/package_simple:example_exe
